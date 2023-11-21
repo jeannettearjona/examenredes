@@ -1,39 +1,52 @@
-# try block to handle exception
+import os
+
+def encrypt_image(file_path, encryption_key):
+    try:
+        # Open the file for reading
+        with open(file_path, 'rb') as fin:
+            # Read the image data
+            image_data = fin.read()
+
+        # Convert the image data into a bytearray
+        image = bytearray(image_data)
+
+        # Perform XOR operation on each value of the bytearray with the key
+        for index, value in enumerate(image):
+            image[index] = value ^ encryption_key
+
+        # Get the file extension from the original file path
+        _, file_extension = os.path.splitext(file_path)
+
+        # Construct a new file path with '_encrypted' appended to the original file name
+        encrypted_file_path = file_path.replace(file_extension, f'_encrypted{file_extension}')
+
+        # Open the new file for writing
+        with open(encrypted_file_path, 'wb') as fout:
+            # Write the encrypted data to the new file
+            fout.write(image)
+
+        print('Encryption Done. Encrypted file saved at:', encrypted_file_path)
+
+    except Exception as e:
+        print('Error caught:', e)
+
+# take path of image as input
+path = input(r'Enter path of Image: ')
+
+# taking encryption key as input
+key = input('Enter Key for encryption of Image: ')
+
 try:
-	# take path of image as a input
-	path = input(r'Enter path of Image : ')
-	
-	# taking encryption key as input
-	key = int(input('Enter Key for encryption of Image : '))
-	
-	# print path of image file and encryption key that
-	# we are using
-	print('The path of file : ', path)
-	print('Key for encryption : ', key)
-	
-	# open file for reading purpose
-	fin = open(path, 'rb')
-	
-	# storing image data in variable "image"
-	image = fin.read()
-	fin.close()
-	
-	# converting image into byte array to 
-	# perform encryption easily on numeric data
-	image = bytearray(image)
+    # Convert the key to an integer
+    key = int(key)
 
-	# performing XOR operation on each vthonalue of bytearray
-	for index, values in enumerate(image):
-		image[index] = values ^ key
+    # Check if the file at the specified path exists
+    if os.path.exists(path):
+        encrypt_image(path, key)
+    else:
+        print('Error: File not found at the specified path.')
 
-	# opening file for writing purpose
-	fin = open(path, 'wb')
-	
-	# writing encrypted data in image
-	fin.write(image)
-	fin.close()
-	print('Encryption Done...')
-
-	
-except Exception:
-	print('Error caught : ', Exception.__name__)
+except ValueError:
+    print('Error: Please enter a valid integer key.')
+except Exception as e:
+    print('Error caught:', e)
